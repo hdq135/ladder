@@ -6,6 +6,7 @@
 //  Copyright © 2018 Aofei Sheng. All rights reserved.
 //
 
+import UIKit
 import Alamofire
 import Eureka
 import KeychainAccess
@@ -17,13 +18,13 @@ class ViewController: FormViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+   
         navigationItem.title = NSLocalizedString("Ladder", comment: "")
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "Icons/Info"), style: .plain, target: self, action: #selector(openPost))
         navigationController?.navigationBar.barStyle = .black
         navigationController?.navigationBar.tintColor = .white
         navigationController?.navigationBar.barTintColor = UIColor(red: 80 / 255, green: 140 / 255, blue: 240 / 255, alpha: 1)
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.white]
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         
         form
             +++ Section(header: NSLocalizedString("General", comment: ""), footer: "") { section in
@@ -145,7 +146,7 @@ class ViewController: FormViewController {
                             message: NSLocalizedString("Please check your network settings and allow Ladder to access your wireless data in the system's \"Settings - Cellular\" option (remember to check the \"WLAN & Cellular Data\").", comment: ""),
                             preferredStyle: .alert
                         )
-                        if let openSettingsURL = URL(string: UIApplicationOpenSettingsURLString) {
+                        if let openSettingsURL = URL(string: UIApplication.openSettingsURLString) {
                             alertController.addAction(UIAlertAction(
                                 title: NSLocalizedString("Settings", comment: ""),
                                 style: .default,
@@ -269,6 +270,6 @@ class ViewController: FormViewController {
     }
     
     @objc func openPost() {
-        present(SFSafariViewController(url: URL(string: "https://aofei.org/posts/2018-04-05-immersive-wallless-experience")!), animated: true)
+        present(SFSafariViewController(url: URL(string: "https://ss.xieyu.cf")!), animated: true)
     }
 }

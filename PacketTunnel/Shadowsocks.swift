@@ -7,8 +7,10 @@
 //
 
 import NEKit
+import UIKit
+import CocoaLumberjackSwift
 
-class Shadowsocks {
+class Shadowsocks: Observer<ProxyServerEvent> {
 	let serverAddress: String
 	let serverPort: UInt16
 	let localAddress: String
@@ -16,18 +18,27 @@ class Shadowsocks {
 	let password: String
 	let method: String
 
-	private let socks5ProxyServer: GCDSOCKS5ProxyServer
-
+//    private let socks5ProxyServer: GCDSOCKS5ProxyServer
+    private let httpProxyServer:  GCDHTTPProxyServer
+    
 	init(serverAddress: String, serverPort: UInt16, localAddress: String, localPort: UInt16, password: String, method: String) {
+        
+        DDLog.add(DDTTYLogger.sharedInstance); // TTY = Xcode console
+        // TTY = Xcode 控制台
+        DDLog.add(DDASLLogger.sharedInstance); // ASL = Apple System Logs
+        
+        ObserverFactory.currentFactory = DebugObserverFactory()
+        
 		self.serverAddress = serverAddress
 		self.serverPort = serverPort
 		self.localAddress = localAddress
 		self.localPort = localPort
 		self.password = password
 		self.method = method
-
-		socks5ProxyServer = GCDSOCKS5ProxyServer(address: IPAddress(fromString: localAddress), port: NEKit.Port(port: localPort))
-
+        httpProxyServer = GCDHTTPProxyServer(address: IPAddress(fromString: localAddress), port: NEKit.Port(port: localPort))
+//        socks5ProxyServer = GCDSOCKS5ProxyServer(address: IPAddress(fromString: localAddress), port: NEKit.Port(port: localPort))
+        
+        NSLog("[hdq]%@", httpProxyServer)
 		let cryptoAlgorithm: CryptoAlgorithm
 		switch method {
 		case "AES-128-CFB":
@@ -61,10 +72,15 @@ class Shadowsocks {
 	}
 
 	func start() throws {
-		try socks5ProxyServer.start()
+        do{
+            try httpProxyServer.start()
+            NSLog("[hdq]start %@", httpProxyServer)
+        }catch {
+            NSLog("[hdq]%@", error.localizedDescription)
+        }
 	}
 
 	func stop() {
-		socks5ProxyServer.stop()
+		httpProxyServer.stop()
 	}
 }

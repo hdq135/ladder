@@ -29,12 +29,17 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         }
         
         let proxySettings = NEProxySettings()
-        proxySettings.autoProxyConfigurationEnabled = true
-        if generalPACMaxAge == 0 {
-            proxySettings.proxyAutoConfigurationURL = generalPACURL
-        } else {
-            proxySettings.proxyAutoConfigurationJavaScript = generalPAC
-        }
+//        proxySettings.autoProxyConfigurationEnabled = true
+//        if generalPACMaxAge == 0 {
+//            proxySettings.proxyAutoConfigurationURL = generalPACURL
+//        } else {
+//            proxySettings.proxyAutoConfigurationJavaScript = generalPAC
+//        }
+
+        proxySettings.httpEnabled = true
+        proxySettings.httpServer = NEProxyServer(address: shadowsocksLocalAddress, port: Int(shadowsocksLocalPort))
+        proxySettings.httpsEnabled = true
+        proxySettings.httpsServer = NEProxyServer(address: shadowsocksLocalAddress, port: Int(shadowsocksLocalPort))
         proxySettings.excludeSimpleHostnames = true
         proxySettings.matchDomains = [""]
         
@@ -43,9 +48,11 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
         networkSettings.ipv4Settings = NEIPv4Settings(addresses: [generalHideVPNIcon ? "0.0.0.0" : "10.0.0.1"], subnetMasks: ["255.0.0.0"])
         networkSettings.mtu = 1500
         
+        NSLog("[hdq]%@", networkSettings)
         setTunnelNetworkSettings(networkSettings) { error in
             if error == nil && self.shadowsocks == nil {
                 do {
+                    NSLog("[hdq]%@", error.debugDescription)
                     self.shadowsocks = Shadowsocks(
                         serverAddress: shadowsocksServerAddress,
                         serverPort: shadowsocksServerPort,
@@ -56,6 +63,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
                     )
                     try self.shadowsocks?.start()
                 } catch let error {
+                    NSLog("[hdq]err")
                     completionHandler(error)
                     return
                 }
